@@ -3,16 +3,38 @@
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import os
+import numpy as np
+import zipfile
 from gan import GAN
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-# 1. Parameters
-image_dir = r'C:/Users/youss/anime_faces/images'
-noise_dim = 100
-batch_size = 64
-epochs = 50
+from google.colab import drive
+drive.mount('/content/drive')
 
-# 2. Preprocessing Images
+
+# Chemin du fichier ZIP dans Google Drive
+zip_path = '/content/drive/MyDrive/yourfile.zip'
+
+# Répertoire de destination pour décompresser les fichiers
+extract_path = '/content/anime_faces'
+
+# Décompresser le fichier
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall(extract_path)
+
+print(f"Fichiers extraits dans : {extract_path}")
+
+
+# Chemin vers le dossier des images extraites
+image_dir = r'/content/anime_faces/images'
+
+# Charger les images depuis le dossier
+images = [os.path.join(image_dir, image) for image in os.listdir(image_dir)]
+
+# Afficher les 6 premières images
+images[:6]
+
+image_size = 64
 
 def preprocess(image):
     image = tf.io.read_file(image)
@@ -21,13 +43,7 @@ def preprocess(image):
     image = (image - 127.5) / 127.5  # Normalize to [-1, 1]
     return image
 
-
-
-
-images = [os.path.join(image_dir, image) for image in os.listdir(image_dir)]
-
-# Afficher les 6 premières images
-images[:6]
+batch_size = 64
 
 training_dataset = tf.data.Dataset.from_tensor_slices((images)) #Si images contient les chemins d'accès : alors le Dataset résultant contiendra seulement les chemins des fichiers
 
@@ -35,6 +51,7 @@ print(len(training_dataset))
 training_dataset = training_dataset.map(preprocess)
 training_dataset = training_dataset.shuffle(1000).batch(batch_size)
 
+len(training_dataset)
 
 
 # visualize some of them
@@ -50,21 +67,19 @@ for row in range(5):
 
 
 
-sample_image = preprocess(images[0])
-print(sample_image.shape)
-
-
-
-
-
+noise_dim = 100
+batch_size = 64
+epochs = 50
 gan = GAN(noise_dim)
 
 
 #@tf.function
+import os
+import tensorflow as tf
+import matplotlib.pyplot as plt
 
- 
 # Ensure the output directory exists
-output_dir = 'output'
+output_dir = '/content/output'
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -125,19 +140,6 @@ def generate_and_save_images(model, epoch, test_input):
 train(training_dataset, epochs)
 
 train(training_dataset, epochs)
-
-noise = tf.random.normal([1, noise_dim])
-generated_image = gan.generator(noise, training=False)
-print(generated_image.shape)  # Should be (1, 64, 64, 3)
-
-
-noise = tf.random.normal([1, noise_dim])
-generated_image = gan.generator(noise, training=False)
-gan.generator.summary()
-
-
-
-
 
 
 
