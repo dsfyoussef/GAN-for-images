@@ -4,11 +4,10 @@ Created on Thu Nov 21 18:41:31 2024
 
 @author: youss
 """
-
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
- 
+
 class Generator(tf.keras.Model):
     def __init__(self, noise_dim):
         super(Generator, self).__init__()
@@ -91,3 +90,13 @@ class GAN:
         real_loss = self.cross_entropy(tf.ones_like(real_output), real_output)
         fake_loss = self.cross_entropy(tf.zeros_like(fake_output), fake_output)
         return real_loss + fake_loss
+    def save(self, filepath):
+        """Saves the GAN model by saving its generator and discriminator."""
+        os.makedirs(filepath, exist_ok=True)
+        self.generator.save(os.path.join(filepath, 'generator.keras')) # Added .h5 extension to the filename
+        self.discriminator.save(os.path.join(filepath, 'discriminator.keras')) # Added .h5 extension to the filename
+
+    def load(self, filepath):
+        """Loads the GAN model by loading its generator and discriminator."""
+        self.generator = keras.models.load_model(os.path.join(filepath, 'generator.keras')) # Added .h5 extension to the filename
+        self.discriminator = keras.models.load_model(os.path.join(filepath, 'discriminator.keras')) # Added .h5 extension to the filename
