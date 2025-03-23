@@ -68,4 +68,3 @@ Potential Improvements:
 Add metrics like FID (Fréchet Inception Distance) or IS (Inception Score) to evaluate the quality of generated images.
 Experiment with advanced architectures like DCGAN or StyleGAN.
 Extend the model to generate faces at higher resolutions.
-If you'd like to further customize this README or add specific instructions, let me know! 😊
